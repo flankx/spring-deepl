@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+    <detectors>
+        <detector class="org.apache.tika.detect.DefaultDetector"/>
+    </detectors>
+    <parsers>
+        <parser class="org.apache.tika.parser.DefaultParser"/>
+    </parsers>
+</properties>
