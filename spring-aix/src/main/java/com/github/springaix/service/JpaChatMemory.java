@@ -28,6 +28,11 @@ public class JpaChatMemory implements ChatMemory {
     }
 
     @Override
+    public List<Message> get(String conversationId) {
+        // Default to returning last 10 messages if not specified
+        return get(conversationId, 10);
+    }
+
     public List<Message> get(String conversationId, int lastN) {
         return chatHistoryRepository.findBySessionIdOrderByCreateTimeDesc(conversationId, Limit.of(lastN)).stream()
             .map(msg -> new UserMessage(msg.getContent())).collect(Collectors.toList());

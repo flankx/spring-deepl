@@ -27,7 +27,7 @@ public class ChatModelController {
     @GetMapping(value = "/generate-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<String> stream(@RequestParam(value = "message", defaultValue = "Tell me a joke") String message) {
         Prompt prompt = new Prompt(new UserMessage(message));
-        return this.chatModel.stream(prompt).map(resp -> resp.getResult().getOutput().getText());
+        return this.chatModel.stream(prompt).mapNotNull(resp -> resp.getResult().getOutput().getText());
     }
 
 }

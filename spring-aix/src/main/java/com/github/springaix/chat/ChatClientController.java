@@ -1,8 +1,5 @@
 package com.github.springaix.chat;
 
-import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY;
-import static org.springframework.ai.chat.client.advisor.AbstractChatMemoryAdvisor.CHAT_MEMORY_RETRIEVE_SIZE_KEY;
-
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
@@ -27,8 +24,12 @@ public class ChatClientController {
     public String generate(@RequestParam String conversationId,
         @RequestParam(value = "message", defaultValue = "Tell me a joke") String message) {
         final String sessionId = StringUtils.isNotBlank(conversationId) ? conversationId : UUID.randomUUID().toString();
-        return this.chatClient.prompt(message).advisors(advisorSpec -> advisorSpec
-            .param(CHAT_MEMORY_CONVERSATION_ID_KEY, sessionId).param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10)).call()
+        return this.chatClient.prompt(message)
+            .advisors(advisorSpec -> advisorSpec
+                .param("conversationId", sessionId)
+                .param("chatMemoryRetrieveSize", 10)
+            )
+            .call()
             .content();
     }
 
@@ -36,8 +37,12 @@ public class ChatClientController {
     public Flux<String> stream(@RequestParam String conversationId,
         @RequestParam(value = "message", defaultValue = "Tell me a joke") String message) {
         final String sessionId = StringUtils.isNotBlank(conversationId) ? conversationId : UUID.randomUUID().toString();
-        return this.chatClient.prompt(message).advisors(advisorSpec -> advisorSpec
-            .param(CHAT_MEMORY_CONVERSATION_ID_KEY, sessionId).param(CHAT_MEMORY_RETRIEVE_SIZE_KEY, 10)).stream()
+        return this.chatClient.prompt(message)
+            .advisors(advisorSpec -> advisorSpec
+                .param("conversationId", sessionId)
+                .param("chatMemoryRetrieveSize", 10)
+            )
+            .stream()
             .content();
     }
 
