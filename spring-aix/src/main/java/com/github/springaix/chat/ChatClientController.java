@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,29 +22,19 @@ public class ChatClientController {
     private final ChatClient chatClient;
 
     @GetMapping(value = "/generate")
-    public String generate(@RequestParam String conversationId,
+    public String generate(@RequestParam(required = false) String conversationId,
         @RequestParam(value = "message", defaultValue = "Tell me a joke") String message) {
         final String sessionId = StringUtils.isNotBlank(conversationId) ? conversationId : UUID.randomUUID().toString();
         return this.chatClient.prompt(message)
-            .advisors(advisorSpec -> advisorSpec
-                .param("conversationId", sessionId)
-                .param("chatMemoryRetrieveSize", 10)
-            )
-            .call()
-            .content();
+            .advisors(advisorSpec -> advisorSpec.param(ChatMemory.CONVERSATION_ID, sessionId)).call().content();
     }
 
     @GetMapping(value = "/generate-stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<String> stream(@RequestParam String conversationId,
+    public Flux<String> stream(@RequestParam(required = false) String conversationId,
         @RequestParam(value = "message", defaultValue = "Tell me a joke") String message) {
         final String sessionId = StringUtils.isNotBlank(conversationId) ? conversationId : UUID.randomUUID().toString();
         return this.chatClient.prompt(message)
-            .advisors(advisorSpec -> advisorSpec
-                .param("conversationId", sessionId)
-                .param("chatMemoryRetrieveSize", 10)
-            )
-            .stream()
-            .content();
+            .advisors(advisorSpec -> advisorSpec.param(ChatMemory.CONVERSATION_ID, sessionId)).stream().content();
     }
 
 }

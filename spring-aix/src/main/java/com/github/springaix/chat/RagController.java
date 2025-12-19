@@ -3,13 +3,12 @@ package com.github.springaix.chat;
 import java.util.List;
 
 import org.springframework.ai.document.Document;
+import org.springframework.ai.reader.tika.TikaDocumentReader;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.github.springaix.service.VectorStoreService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,12 +18,15 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class RagController {
 
-    private final VectorStoreService vectorStoreService;
     private final VectorStore vectorStore;
 
     @PostMapping("/rag/upload")
-    public String uploadFile(MultipartFile file) {
-        return vectorStoreService.processDocument(file);
+    public void uploadFile(MultipartFile file) {
+        TikaDocumentReader tikaDocumentReader = new TikaDocumentReader(file.getResource());
+        // 2. 生成文档
+        List<Document> documents = tikaDocumentReader.read();
+        // 3. 存入Elasticsearch
+        vectorStore.add(documents);
     }
 
     @PostMapping("/rag/similaritySearch")

@@ -27,6 +27,11 @@ spring:
     username:
     password:
   ai:
+    chat:
+      memory:
+        repository:
+          jdbc:
+            initialize-schema: always
     ollama:
       base-url: http://127.0.0.1:11434
       chat:

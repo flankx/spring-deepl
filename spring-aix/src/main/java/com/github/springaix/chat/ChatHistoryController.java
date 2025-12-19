@@ -2,13 +2,12 @@ package com.github.springaix.chat;
 
 import java.util.List;
 
-import org.springframework.data.domain.Sort;
+import org.springframework.ai.chat.memory.repository.jdbc.JdbcChatMemoryRepository;
+import org.springframework.ai.chat.messages.Message;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.github.springaix.entity.ChatHistory;
-import com.github.springaix.repository.ChatHistoryRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,16 +16,21 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/history")
 public class ChatHistoryController {
 
-    private final ChatHistoryRepository chatHistoryRepository;
+    private final JdbcChatMemoryRepository memoryRepository;
 
-    @GetMapping("/list")
-    public List<ChatHistory> listHistory() {
-        return chatHistoryRepository.findAll(Sort.by(Sort.Direction.DESC, "createTime"));
+    @GetMapping("/getAllConversationIds")
+    public List<String> listHistory() {
+        return memoryRepository.findConversationIds();
     }
 
-    @GetMapping("/clear")
-    public void clearHistory(String conversationId) {
-        chatHistoryRepository.deleteBySessionId(conversationId);
+    @GetMapping("/query/{conversationId}")
+    public List<Message> queryHistory(@PathVariable String conversationId) {
+        return memoryRepository.findByConversationId(conversationId);
+    }
+
+    @GetMapping("/clear/{conversationId}")
+    public void clearHistory(@PathVariable String conversationId) {
+        memoryRepository.deleteByConversationId(conversationId);
     }
 
 }
