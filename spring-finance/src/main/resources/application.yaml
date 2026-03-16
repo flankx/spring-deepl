@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: spring-finance
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/finance_db
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 60000
+      connection-timeout: 30000
+      max-lifetime: 1800000
+      pool-name: HikariPool-1
+  jpa:
+    open-in-view: false
+    show_sql: true
+    hibernate:
+      ddl-auto: update
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
